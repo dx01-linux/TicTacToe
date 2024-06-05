@@ -31,19 +31,22 @@ const OwnedTitles = (()=>{
         B : [] ,
         C : [] ,
     }
-
     let sortingGroup = (Group = '') => {
         let group = [];
         group = board[Group];
 
         let holder = '';
-        for(let i = 0 ; i < group.length-1 ; i++){
-            let pos = (arrPos) => (group[arrPos].split(''))[1];
-            //current pos > next pos
-            if(pos(i) > pos(i+1)){
-                holder = group[i];
-                group[i] = group[i+1];
-                group[i+1] = holder;
+        for(let e = 0 ; e < group.length ; e++){
+            for(let i = 0 ; i < group.length ; i++){
+                let pos = (arrPos) => (group[arrPos].split(''))[1];
+                //current new value < current value on spot 
+                if(pos(e) < pos(i)){
+                    //hold old value
+                    holder = group[i];
+                    // swamp them
+                    group[i] = group[e];
+                    group[e] = holder;
+                }
             }
         }
     }
@@ -54,9 +57,11 @@ const OwnedTitles = (()=>{
         let group = pos[0].toUpperCase();
         board[group].push((pos[0]+pos[1]));
         //sort board[group]
-        sortingGroup(group);
+        if(board[group].length > 1){
+            sortingGroup(group);
+        }
     }
-    let getOwnedTitles = () => board ;
+    let getOwnedTitles = (group) => board[group] ;
 
     return {
         getOwnedTitles , setTitle ,
@@ -67,12 +72,13 @@ let player = ((Sign)=>{
     //storage player sign
     //storage data about player's owned titles
     let sign = Sign ;
-    let ownedTitles = [] ;
+    let ownedTitles = OwnedTitles();
+
     let setOwnedTitel = (obj = {resp , pos}) => {
         let resp = obj.resp ;
         let pos = obj.pos ;
         if(resp == true){
-            ownedTitles.push(pos);
+            ownedTitles.setTitle(pos);
         }
     }
 
@@ -87,8 +93,9 @@ let player = ((Sign)=>{
     }
     init();
 
+    //testing purpose
     return{
-        owningTitle , ownedTitles ,
+        owningTitle , getOwnedTitles : ownedTitles.getOwnedTitles() ,
     }
 
 });
