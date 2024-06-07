@@ -161,23 +161,70 @@ const title = (Pos) => {
         }
     }
 
+    //reset titles values
+    let reset = () =>{
+        isOwn = false ;
+        owner = '' ;
+    }
+
     return {
-        setOwner, getIsOwn, getOwner, getPos
+        setOwner, getIsOwn, getOwner, getPos , reset
     }
 }
+const GameData = () => {
+    //game stats
+    let round = 1 ;
+
+    let data = {
+        x : 0 ,
+        o : 0 ,
+        draw : 0 ,
+    }
+    //increase winner points
+    let setWinner = (player= 'draw') => {
+        data[player] += 1 ;
+    };
+    let setRound = () => {
+        round++
+    };
+        //reset data to 0
+    let reset = () => {
+        //reset round
+        round = 1 ;
+        //reset data values to default
+        let keys = Object.keys(data);
+        keys.forEach(key => {
+            data[key] = 0 ;
+        });
+    };
+
+    let getData = () => {
+        console.log(`Results : Round#${round}`);
+        console.log(`x : ${data.x} , o : ${data.o} , draws : ${data.draw}`);
+        return data ;
+    } 
+
+    return {
+        setWinner , reset , setRound , getData 
+    }
+
+}
 const Board = (pubSub) => {
-    //titles
+    //board
     let board = {
         //0 , 1 , 2
         A: [title('a0'), title('a1'), title('a2')],
         B: [title('b0'), title('b1'), title('b2')],
         C: [title('c0'), title('c1'), title('c2')]
     }
+    //game data 
+    let gameData = GameData();
     //pubSub events
     let events = {
-        requestTitle : (playerSing)=> `request_title${playerSing}`,
-        reqTitleResponse : (playerSing) => `request_title_resp${playerSing}`,
-        reqTitlesOwned : (playerSing) => `submit_titles_owned${playerSing}`,
+        requestTitle : (playerSing)=> `request_title_${playerSing}`,
+        reqTitleResponse : (playerSing) => `request_title_resp_${playerSing}`,
+        reqTitlesOwned : (playerSing) => `submit_titles_owned_${playerSing}`,
+        reset : (playerSign) => {`reset_${playerSign}`},
     }
     //module to check winner patterns
     let isWinner = IsWinner();
@@ -201,6 +248,15 @@ const Board = (pubSub) => {
             pubSub.publish(events.reqTitleResponse(obj.Owner), {resp: true, pos: title.getPos()});
         }
     }
+    //reset titles
+    let resetTitles = () => {
+        let keys = Object.keys(board);
+        keys.forEach(key=>{
+            key.forEach(title=>{
+                title.reset();
+            })
+        })
+    } 
 
     //init pub sub events
     let init = () => {
@@ -211,13 +267,37 @@ const Board = (pubSub) => {
         //check winner x
         pubSub.subscribe(events.reqTitlesOwned('x') , function(obj){
             if(isWinner.check(obj) == true){
+                //console.log winner
                 console.log('x won round');
+                //set winner at game data , print result
+                gameData.setWinner('x');
+                gameData.getData()
+                //increase round
+                gameData.setRound();
+                //reset board
+                resetTitles();
+                //reset players
+                pubSub.emit(events.reset('x'));
+                pubSub.emit(events.reset('o'));
+                
+                
+
             }
         })
         //check winner o
         pubSub.subscribe(events.reqTitlesOwned('o') , function(obj){
             if(isWinner.check(obj) == true){
                 console.log('o won round');
+                gameData.setWinner('o');
+                gameData.getData()
+                //increase round
+                gameData.setRound();
+                //reset board
+                resetTitles();
+                //reset players
+                pubSub.emit(events.reset('x'));
+                pubSub.emit(events.reset('o'));
+
             }
         })
     }

@@ -37,9 +37,15 @@ const titles = ()=>{
         }
     }
     let getTitles = () => board;
-
+    
+    let reset = () => {
+        let keys = Object.keys(board);
+        keys.forEach(key =>{
+            board[key] = [];
+        })
+    }
     return {
-        getTitles ,  setTitle,
+        getTitles ,  setTitle, reset ,
     }
 };
 
@@ -51,9 +57,10 @@ const Player = (Sign , pubSub) => {
 
     //pubSub events
     let events = {
-        requestTitle: `request_title${sign}` ,
-        reqTitleResponse : `request_title_resp${sign}` ,
-        reqTitlesOwned: `submit_titles_owned${sign}`,
+        requestTitle: `request_title_${sign}` ,
+        reqTitleResponse : `request_title_resp_${sign}` ,
+        reqTitlesOwned: `submit_titles_owned_${sign}`,
+        reset : `reset_${sign}` ,
     }
     
     //trigger on Board response to requestTitle , if resp is true , add position to player titles
@@ -83,6 +90,7 @@ const Player = (Sign , pubSub) => {
     let init = () => {
         //subscribe to resp from board when request title ask for a title
         pubSub.subscribe(events.reqTitleResponse , setTitel);
+        pubSub.subscribe(events.reset , reset )
     }
     
     init();

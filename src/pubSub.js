@@ -18,8 +18,18 @@ const PubSub = () => {
         }
     }
 
+    let emit = (eve) => {
+        if(typeof(events[eve]) == "undefined"){
+            console.log(`PubSub : ${eve} does not exist`);
+        } else {
+            events[eve].forEach(fn=> {
+                fn();
+            })
+        }
+    }
+
     return {
-        publish, subscribe,
+        publish, subscribe, emit ,
     }
 }
 
