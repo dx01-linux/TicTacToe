@@ -1,4 +1,4 @@
-const IsWinner = (()=> {
+const IsWinner = ()=> {
     //        Board
     //      A  B  C
     // 1
@@ -131,8 +131,8 @@ const IsWinner = (()=> {
     }
 
     return { check }
-})
-let title = (Pos) => {
+}
+const title = (Pos) => {
     //coor 
     //is ocup
     //who 
@@ -164,7 +164,7 @@ let title = (Pos) => {
         setOwner, getIsOwn, getOwner, getPos
     }
 }
-export const Board = ((pubSub) => {
+const Board = (pubSub) => {
     //titles
     let board = {
         //0 , 1 , 2
@@ -179,7 +179,7 @@ export const Board = ((pubSub) => {
     }
     let isWinner = IsWinner();
     //set a title to a player 
-    let setTitle = (obj = { Group: 'A', Pos: 0, Owner: 'x' }) => {
+    let setTitle = (obj = { Group: '', Pos: 0, Owner: '' }) => {
         //acceder board.group.pos.setOwner(sign)
         let group = {};
         group = board[obj.Group];
@@ -215,7 +215,7 @@ export const Board = ((pubSub) => {
         isWinner : isWinner.check , setTitle
     }
 
-});
+};
 
 function test() {
     //vertical patterns 
@@ -245,3 +245,7 @@ function test() {
     console.log(Board.isWinner(vObj));
 }
 
+
+export {
+    Board ,
+}

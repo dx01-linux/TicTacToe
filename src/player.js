@@ -1,5 +1,5 @@
 
-const titles = (()=>{
+const titles = ()=>{
     //storage owned titles by group
     let board = {
         A: [],
@@ -41,9 +41,9 @@ const titles = (()=>{
     return {
         getTitles ,  setTitle,
     }
-});
+};
 
-export const Player = ((Sign , pubSub) => {
+const Player = (Sign , pubSub) => {
     //storage player sign
     //storage data about player's owned titles
     let sign = Sign;
@@ -64,7 +64,12 @@ export const Player = ((Sign , pubSub) => {
         }
     }
 
-    let requestTitle= (obj = { Group: 'A', Pos: 0, Owner: sign }) => {
+    let requestTitle= (Group = 'A' , Pos = 0 ) => {
+        const obj = {
+            Group , 
+            Pos , 
+            Owner : sign ,
+        }  
         pubSub.publish(events.requestTitle, obj );
     }
 
@@ -77,12 +82,12 @@ export const Player = ((Sign , pubSub) => {
 
     //testing purpose
     return {
-        setTitel , requestTitle , getTitles : playerTitles.getTitles() ,
+        setTitel , requestTitle , getTitles : playerTitles.getTitles ,
     }
 
-});
+};
 
-export const testPlayer = {
+const testPlayer = {
     reqTitle : function(player){
         let values  = [
             testValuesA = [{Group : 'A' , Pos : 0 } , {Group : 'A' , Pos : 2 } , {Group : 'A' , Pos : 1 }] ,
@@ -101,3 +106,6 @@ export const testPlayer = {
     }
 }
 
+export {
+    Player ,
+}

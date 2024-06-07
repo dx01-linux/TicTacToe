@@ -1,4 +1,4 @@
-export const PubSub = (() => {
+const PubSub = () => {
     let events = {};
 
     let subscribe = (eve, fn) => {
@@ -21,4 +21,8 @@ export const PubSub = (() => {
     return {
         publish, subscribe,
     }
-})
+}
+
+export {
+    PubSub ,
+}
