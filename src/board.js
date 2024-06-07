@@ -76,6 +76,7 @@ const IsWinner = ()=> {
         }  else {
             return false;
         }
+        
     } 
     // run test over the two cross patterns
     let testCrossPatterns = (obj) => {
@@ -172,11 +173,13 @@ const Board = (pubSub) => {
         B: [title('b0'), title('b1'), title('b2')],
         C: [title('c0'), title('c1'), title('c2')]
     }
+    //pubSub events
     let events = {
-        reqTitlesOwned : (playerSing) => `submit_titles_owned${sign}`,
         requestTitle : (playerSing)=> `request_title${playerSing}`,
         reqTitleResponse : (playerSing) => `request_title_resp${playerSing}`,
+        reqTitlesOwned : (playerSing) => `submit_titles_owned${playerSing}`,
     }
+    //module to check winner patterns
     let isWinner = IsWinner();
     //set a title to a player 
     let setTitle = (obj = { Group: '', Pos: 0, Owner: '' }) => {
@@ -189,23 +192,34 @@ const Board = (pubSub) => {
         //if resp is false title is owned 
         if (resp == false) {
             console.log(`${title.getPos()} is owned by ${title.getOwner()}`);
-            
             //it is owned by someone error
-            pubSub.publish( events.reqTitleResponse(obj.Owner), { resp: false, pos: title.getPos() });
+            pubSub.publish(events.reqTitleResponse(obj.Owner), {resp: false, pos: title.getPos()});
         }
         else if (resp == true) {
             console.log(`${title.getPos()} was take by ${title.getOwner()}`);
-
             //it was took successfully
-            pubSub.publish(events.reqTitleResponse(obj.Owner), { resp: true, pos: title.getPos() })
-           
+            pubSub.publish(events.reqTitleResponse(obj.Owner), {resp: true, pos: title.getPos()});
         }
     }
 
+    //init pub sub events
     let init = () => {
         //check if player wants own a title & if it is winner after take it
         pubSub.subscribe(events.requestTitle('x'), setTitle);
         pubSub.subscribe(events.requestTitle('o'), setTitle);
+
+        //check winner x
+        pubSub.subscribe(events.reqTitlesOwned('x') , function(obj){
+            if(isWinner.check(obj) == true){
+                console.log('x won round');
+            }
+        })
+        //check winner o
+        pubSub.subscribe(events.reqTitlesOwned('o') , function(obj){
+            if(isWinner.check(obj) == true){
+                console.log('o won round');
+            }
+        })
     }
 
     
@@ -216,34 +230,6 @@ const Board = (pubSub) => {
     }
 
 };
-
-function test() {
-    //vertical patterns 
-    //horizontal
-    //cross
-    const vObj = {
-        A: ['a1'],
-        B: [],
-        C: ['c0', 'c1', 'c2']
-    }
-    const hObj = {
-        A: ['a0'],
-        B: ['b0'],
-        C: ['c0']
-    }
-    const crossObj = {
-        A: ['a0'],
-        B: ['b1'],
-        C: ['c2'],
-    }
-    const fObj = {
-        A: ['a2'],
-        B: ['b0'],
-        C: ['c0'],
-    }
-
-    console.log(Board.isWinner(vObj));
-}
 
 
 export {

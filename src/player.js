@@ -49,30 +49,37 @@ const Player = (Sign , pubSub) => {
     let sign = Sign;
     let playerTitles = titles();
 
+    //pubSub events
     let events = {
         requestTitle: `request_title${sign}` ,
         reqTitleResponse : `request_title_resp${sign}` ,
-
-        submitTitlesOwned: `submit_titles_owned${sign}`,
+        reqTitlesOwned: `submit_titles_owned${sign}`,
     }
     
+    //trigger on Board response to requestTitle , if resp is true , add position to player titles
     let setTitel = (obj = { resp, pos }) => {
         let resp = obj.resp;
         let pos = obj.pos;
         if (resp == true) {
             playerTitles.setTitle(pos);
         }
+
+        //send back titles to check if player won
+        pubSub.publish(events.reqTitlesOwned , playerTitles.getTitles());
     }
 
+    //request a title to board via PubSub
     let requestTitle= (Group = 'A' , Pos = 0 ) => {
         const obj = {
             Group , 
             Pos , 
             Owner : sign ,
-        }  
-        pubSub.publish(events.requestTitle, obj );
+        } 
+        
+        pubSub.publish(events.requestTitle, obj);
     }
 
+    //init pubSub events
     let init = () => {
         //subscribe to resp from board when request title ask for a title
         pubSub.subscribe(events.reqTitleResponse , setTitel);
