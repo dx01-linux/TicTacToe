@@ -174,6 +174,7 @@ const title = (Pos) => {
 const GameData = () => {
     //game stats
     let round = 1 ;
+    let turn = 1 ;
 
     let data = {
         x : 0 ,
@@ -187,6 +188,14 @@ const GameData = () => {
     let setRound = () => {
         round++
     };
+    let setTurn = () => {
+        turn ++;
+        if(turn == 3){
+            turn = 1;
+        }
+        
+    } 
+    let getTurn = () => turn ; 
         //reset data to 0
     let reset = () => {
         //reset round
@@ -205,7 +214,7 @@ const GameData = () => {
     } 
 
     return {
-        setWinner , reset , setRound , getData 
+        setWinner , reset , setRound , getData , setTurn , getTurn
     }
 
 }
@@ -215,7 +224,7 @@ const Board = (pubSub) => {
         //0 , 1 , 2
         A: [title('a0'), title('a1'), title('a2')],
         B: [title('b0'), title('b1'), title('b2')],
-        C: [title('c0'), title('c1'), title('c2')]
+        C: [title('c0'), title('c1'), title('c2')],
     }
     //game data 
     let gameData = GameData();
@@ -224,10 +233,13 @@ const Board = (pubSub) => {
         requestTitle : (playerSing)=> `request_title_${playerSing}`,
         reqTitleResponse : (playerSing) => `request_title_resp_${playerSing}`,
         reqTitlesOwned : (playerSing) => `submit_titles_owned_${playerSing}`,
-        reset : (playerSign) => {`reset_${playerSign}`},
+        reset : () => `reset`,
     }
     //module to check winner patterns
     let isWinner = IsWinner();
+
+
+
     //set a title to a player 
     let setTitle = (obj = { Group: '', Pos: 0, Owner: '' }) => {
         //acceder board.group.pos.setOwner(sign)
@@ -248,21 +260,42 @@ const Board = (pubSub) => {
             pubSub.publish(events.reqTitleResponse(obj.Owner), {resp: true, pos: title.getPos()});
         }
     }
+
     //reset titles
     let resetTitles = () => {
         let keys = Object.keys(board);
         keys.forEach(key=>{
-            key.forEach(title=>{
+            board[key].forEach(title=>{
                 title.reset();
             })
         })
     } 
 
+    //on player's request for a title , it give them one if it's their turn 
+    let playTurn = (obj) => {
+        
+        switch(true){
+            //x turn
+            case gameData.getTurn() == 1 && obj.Owner == 'x':
+                setTitle(obj);
+                gameData.setTurn();
+                break;
+            //o turn 
+            case gameData.getTurn() == 2 && obj.Owner == 'o' :
+                setTitle(obj);
+                gameData.setTurn();
+                break;
+            default :
+                console.log('not your turn');
+                break;
+        }
+    };
+
     //init pub sub events
     let init = () => {
         //check if player wants own a title & if it is winner after take it
-        pubSub.subscribe(events.requestTitle('x'), setTitle);
-        pubSub.subscribe(events.requestTitle('o'), setTitle);
+        pubSub.subscribe(events.requestTitle('x'), playTurn);
+        pubSub.subscribe(events.requestTitle('o'), playTurn);
 
         //check winner x
         pubSub.subscribe(events.reqTitlesOwned('x') , function(obj){
@@ -277,8 +310,8 @@ const Board = (pubSub) => {
                 //reset board
                 resetTitles();
                 //reset players
-                pubSub.emit(events.reset('x'));
-                pubSub.emit(events.reset('o'));
+                pubSub.emit(events.reset());
+
                 
                 
 
@@ -295,19 +328,13 @@ const Board = (pubSub) => {
                 //reset board
                 resetTitles();
                 //reset players
-                pubSub.emit(events.reset('x'));
-                pubSub.emit(events.reset('o'));
+                pubSub.emit(events.reset())
 
             }
         })
     }
-
-    
+  
     init();
-
-    return {
-        isWinner : isWinner.check , setTitle
-    }
 
 };
 

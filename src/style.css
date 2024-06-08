@@ -1,0 +1,46 @@
+* , body {
+    box-sizing: border-box ;
+    margin: 0%;
+    padding: 0%;
+}
+
+#wrapper {
+    align-items: center;
+    background-color: black;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    width: 100vw;
+}
+
+/* block components */
+
+.board {
+    display: grid;
+    height: 50vh;
+    width: 50vw;
+}
+
+
+/* dependents*/
+
+
+
+/* modifyers*/
+.board--theme , .title--theme {
+    border: 3px solid white;
+    border-radius: 10px ;
+    color: white;
+}
+.title--theme{
+    border-radius: 0px;
+}
+.board--layout{
+    column-gap: 5px;
+    display: grid;
+    grid-template-columns: repeat(3 , 1fr);
+    grid-template-rows: calc(3 , 1fr);
+    padding: 3px;
+    row-gap: 5px;    
+}
+

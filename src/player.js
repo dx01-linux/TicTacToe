@@ -60,17 +60,16 @@ const Player = (Sign , pubSub) => {
         requestTitle: `request_title_${sign}` ,
         reqTitleResponse : `request_title_resp_${sign}` ,
         reqTitlesOwned: `submit_titles_owned_${sign}`,
-        reset : `reset_${sign}` ,
+        reset : `reset` ,
     }
     
     //trigger on Board response to requestTitle , if resp is true , add position to player titles
-    let setTitel = (obj = { resp, pos }) => {
+    let setTitel = (obj = { resp : true , pos : 'a0' }) => {
         let resp = obj.resp;
         let pos = obj.pos;
         if (resp == true) {
             playerTitles.setTitle(pos);
         }
-
         //send back titles to check if player won
         pubSub.publish(events.reqTitlesOwned , playerTitles.getTitles());
     }
@@ -90,37 +89,20 @@ const Player = (Sign , pubSub) => {
     let init = () => {
         //subscribe to resp from board when request title ask for a title
         pubSub.subscribe(events.reqTitleResponse , setTitel);
-        pubSub.subscribe(events.reset , reset )
+        //reset player titles
+        pubSub.subscribe(events.reset , playerTitles.reset);
     }
     
     init();
 
     //testing purpose
     return {
-        setTitel , requestTitle , getTitles : playerTitles.getTitles ,
+        setTitel , requestTitle , getTitles : playerTitles.getTitles , reset : playerTitles.reset ,
     }
 
 };
 
-const testPlayer = {
-    reqTitle : function(player){
-        let values  = [
-            testValuesA = [{Group : 'A' , Pos : 0 } , {Group : 'A' , Pos : 2 } , {Group : 'A' , Pos : 1 }] ,
-            testValuesB = [{Group : 'B' , Pos : 1 } , {Group : 'A' , Pos : 0 } , {Group : 'A' , Pos : 2 }] ,
-            testValuesC = [{Group : 'A' , Pos : 0 } , {Group : 'A' , Pos : 1 } , {Group : 'A' , Pos : 2 }] ,
-        ]
-
-        [0 , 1 , 2].forEach(test => {
-            console.log('test#'+test);
-            [0 , 1 ,2 ].forEach(pos => {
-                let testV = values[test[pos]];
-                player.requestTitle(testV);
-            })
-            console.log('test#'+test+' '+'End');
-        })
-    }
-}
-
 export {
     Player ,
 }
+
