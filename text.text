@@ -1,0 +1,10 @@
+Board : 
+    * assg. titles to players
+    * reset titles to default 
+    * check if anyone won
+
+Player : 
+    *keep track of player's titles
+    *request titles to Board
+    *send titles to Board
+    *sort titles 

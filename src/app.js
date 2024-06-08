@@ -1,12 +1,10 @@
-import {PubSub} from './pubSub';
-import {Board} from './board';
-import {Player} from './player';
+import Board from "../src2/board";
+import Player from "../src2/player";
+import PubSub from "../src2/pubSub";
 
 
-//game objects
 
-window.pubSub = PubSub();
-window.board = Board(pubSub);
-window.playerOne = Player('x' , pubSub);
-window.playerTwo = Player('o' , pubSub);
 
+window.pubSub = new PubSub ; 
+window.board = new Board ;
+window.playerOne = new Player('x') ;
