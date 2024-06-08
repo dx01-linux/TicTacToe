@@ -102,24 +102,6 @@ function Player(Sign , pubSub){
 
 };
 
-const testPlayer = {
-    reqTitle : function(player){
-        let values  = [
-            testValuesA = [{Group : 'A' , Pos : 0 } , {Group : 'A' , Pos : 2 } , {Group : 'A' , Pos : 1 }] ,
-            testValuesB = [{Group : 'B' , Pos : 1 } , {Group : 'A' , Pos : 0 } , {Group : 'A' , Pos : 2 }] ,
-            testValuesC = [{Group : 'A' , Pos : 0 } , {Group : 'A' , Pos : 1 } , {Group : 'A' , Pos : 2 }] ,
-        ]
-
-        [0 , 1 , 2].forEach(test => {
-            console.log('test#'+test);
-            [0 , 1 ,2 ].forEach(pos => {
-                let testV = values[test[pos]];
-                player.requestTitle(testV);
-            })
-            console.log('test#'+test+' '+'End');
-        })
-    }
-}
 
 export {
     Player ,
