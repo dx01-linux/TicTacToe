@@ -9,37 +9,27 @@ const PubSub = () => {
         events[eve].push(fn)
     }
     let publish = (eve, data) => {
-        
-        switch(events[eve]){
-            //event is undefine
-            case events[eve] == undefined :
-                console.log(` PubSub : ${eve}  does not exsist`);
-                break;
-            //events does not have any callback
-            case events[eve].lenght == 0 :
-                console.log(` PubSub : ${eve} does'n have any callback-fn`);
-                break;
-            default :
-            //run any callback inside events[eve]
-                events[eve].forEach(fn=> {
-                    fn(data);
-                })
-                break;
+        if(typeof(events[eve]) == "undefined"){
+            console.log(`PubSub : ${eve} does not exist`);
+        } else {
+            events[eve].forEach(fn=> {
+                fn(data);
+            })
         }
     }
 
     let emit = (eve) => {
-        if(events[eve] == undefined){
+        if(typeof(events[eve]) == "undefined"){
             console.log(`PubSub : ${eve} does not exist`);
         } else {
-            events[eve].forEach(fn => {
+            events[eve].forEach(fn=> {
                 fn();
             })
         }
     }
 
-    return { 
-        publish, subscribe, emit , events
+    return {
+        publish, subscribe, emit ,
     }
 }
 
