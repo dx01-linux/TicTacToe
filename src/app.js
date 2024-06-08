@@ -1,5 +1,5 @@
 import {PubSub} from './pubSub';
-import {Board} from './board';
+import {Board} from './board/board';
 import {Player} from './player';
 
 

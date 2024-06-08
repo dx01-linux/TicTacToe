@@ -1,5 +1,5 @@
 
-const titles = ()=>{
+function titles(){
     //storage owned titles by group
     let board = {
         A: [],
@@ -47,9 +47,9 @@ const titles = ()=>{
     return {
         getTitles ,  setTitle, reset ,
     }
-};
+}
 
-const Player = (Sign , pubSub) => {
+function Player(Sign , pubSub){
     //storage player sign
     //storage data about player's owned titles
     let sign = Sign;
