@@ -1,10 +1,9 @@
-import Board from "../src2/board";
-import Player from "../src2/player";
-import PubSub from "../src2/pubSub";
+import Board from "./board";
+import PubSub from "./pubSub";
 
 
 
 
-window.pubSub = new PubSub ; 
-window.board = new Board ;
-window.playerOne = new Player('x') ;
+const pubSub = PubSub () ; 
+
+const board = Board(pubSub) ;

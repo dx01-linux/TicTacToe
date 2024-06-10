@@ -1,317 +1,336 @@
-const IsWinner = ()=> {
-    //        Board
-    //      A  B  C
-    // 1
-    // 0
-    // 2
-    //run test over all horizontal pos
+import Player from "./player";
+
+function havePatterns(obj) {
     let testHorizontalPattern = (obj) => {
         //run test ower own horizontal pos
-        let horizontal = (obj , pos) => {
+        let horizontal = (obj, pos) => {
             let hasValue = [];
-            let hasPattern = 0 ;
-            let getValue = ['a' , 'b' , 'c'].map(value => (value+pos));
-            
-            let counter = 0 ;
+            let hasPattern = 0;
+            let getValue = ['a', 'b', 'c'].map(value => (value + pos));
+
+            let counter = 0;
             let keys = Object.keys(obj);
             keys.forEach(key => {
-                if(getValue[counter] == obj[key][pos]){
+                if (getValue[counter] == obj[key][pos]) {
                     hasValue.push(true);
                 } else {
                     hasValue.push(false);
                 }
-                counter+=1;
+                counter += 1;
             });
-            
+
             hasValue.forEach(value => {
-                if(value == true){
-                    hasPattern += 1 ;
+                if (value == true) {
+                    hasPattern += 1;
                 }
             });
 
-            if(hasPattern == 3){
-                return true ;
+            if (hasPattern == 3) {
+                return true;
             } else {
-                return false ;
-            } 
+                return false;
+            }
         }
-        
-        if(horizontal(obj , 0) == true || horizontal(obj , 1) == true || horizontal(obj , 2) == true ){
-            return true ;
+
+        if (horizontal(obj, 0) == true || horizontal(obj, 1) == true || horizontal(obj, 2) == true) {
+            return true;
         } else {
-            return false ;
+            return false;
         }
     }
-     //run test over one vertical group
+    //run test over one vertical group
     let testVerticalsPatterns = (obj) => {
         //test one vertical group
-        let vertical = (obj , group) => {
+        let vertical = (obj, group) => {
             let hasValue = [];
-            let hasPattern = false ;
-            let getValue = [0 , 1 , 2].map(value => (group.toLowerCase())+value);
-            
+            let hasPattern = false;
+            let getValue = [0, 1, 2].map(value => (group.toLowerCase()) + value);
+
             let counter = 0;
             getValue.forEach(value => {
-                if(value == obj[group][counter]){
-                    hasValue.push(true);    
+                if (value == obj[group][counter]) {
+                    hasValue.push(true);
                 } else {
                     hasValue.push(false);
                 }
-                counter += 1 ;
+                counter += 1;
             });
-    
+
             hasValue.forEach(value => {
-                if(value == false){
-                    hasPattern = false ;
-                    return ;
+                if (value == false) {
+                    hasPattern = false;
+                    return;
                 }
-    
+
                 hasPattern = true;
             });
             return hasPattern;
         }
 
-        if(vertical(obj, 'A') == true || vertical(obj, 'B') == true || vertical(obj, 'C') == true){
-            return true ;
-        }  else {
+        if (vertical(obj, 'A') == true || vertical(obj, 'B') == true || vertical(obj, 'C') == true) {
+            return true;
+        } else {
             return false;
         }
-        
-    } 
+
+    }
     // run test over the two cross patterns
     let testCrossPatterns = (obj) => {
         // let crossA = ['a0' , 'b1' , 'c2'];
         let crossA = {
-            A : 'a0' ,
-            B : 'b1' ,
-            C : 'c2' ,
+            A: 'a0',
+            B: 'b1',
+            C: 'c2',
         }
         let crossB = {
-            A : 'a2' ,
-            B : 'b1' ,
-            C : 'c0' ,
+            A: 'a2',
+            B: 'b1',
+            C: 'c0',
         }
 
         //compare patter crossA & crossB against incoming Object
-        let check = (obj , patt) => {
-            let hasPattern = 0 ;
+        let check = (obj, patt) => {
+            let hasPattern = 0;
             let keys = Object.keys(obj);
             keys.forEach(key => {
-                obj[key].forEach(value  => {
-                    if(value == patt[key]){
-                        hasPattern += 1 ;
+                obj[key].forEach(value => {
+                    if (value == patt[key]) {
+                        hasPattern += 1;
                     }
                 })
             })
-            if(hasPattern == 3){
-                return true ;
-            } else {
-                return false ;
-            }
-        }
-
-        if(check(obj , crossA) == true || check(obj , crossB) == true){
-            return true ;
-        } else {
-            return false ;
-        }
-    
-    }
-
-    let check = (obj) => {
-        if(typeof(obj) == undefined){
-            console.log(`pattern can't be performed over an undefined object`);
-        }
-        else {
-            if (testHorizontalPattern(obj) == true || testVerticalsPatterns(obj) == true || testCrossPatterns(obj) == true){
-                return true ;
+            if (hasPattern == 3) {
+                return true;
             } else {
                 return false;
             }
         }
+
+        if (check(obj, crossA) == true || check(obj, crossB) == true) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
-    return { check }
+    let check = (obj) => {
+        switch(true){
+            case obj == undefined :
+                console.log(`pattern can't be performed over an undefined object`);
+                return false ;
+                break ;
+            default :
+                if (testHorizontalPattern(obj) == true || testVerticalsPatterns(obj) == true || testCrossPatterns(obj) == true) {
+                    return true;
+                }   
+                break ;
+        }
+    }
+
+    return check(obj);
 }
-const title = (Pos) => {
-    //coor 
-    //is ocup
-    //who 
+function Title(Pos) {
+    let element = document.querySelector(`#${Pos}`);
     let pos = Pos;
     let isOwn = false;
     let owner = '';
 
-    let getPos = () => pos;
-    let getIsOwn = () => isOwn;
-    let setIsOnw = (setter = false) => isOwn = setter;
-    let getOwner = () => owner;
-    let setOwner = (sign = 'x||o') => {
-        //if not owned
-        if (getIsOwn() == false) {
-            //turn to owned
-            setIsOnw(true);
-            //asign owner
-            owner = sign;
-            //respond it work
-            return true;
-        }
-        else {
-            //is owned , can't be owned 
-            return false;
-        }
+    function getPos() {
+        return pos;
+    }
+    function getIsOwn() {
+        return isOwn;
+    }
+    function getOwner() {
+        return owner;
+    }
+    function setIsOwn(boolean) {
+        isOwn = boolean;
+    }
+    function setOwner(owner) {
+        owner = owner;
     }
 
-    //reset titles values
-    let reset = () =>{
-        isOwn = false ;
-        owner = '' ;
+    //reset title values to default
+    function reset() {
+        owner = '';
+        isOwn = false;
+        element.innerHTML = '' ;
+    }
+    function renderOwnerSing(owner) {
+        let component = (className) => {
+            return `<i class="${className}"></i>`;
+        };
+
+        if (owner == 'x') {
+            element.innerHTML = component('fa-solid fa-x');
+        } else if (owner == 'o') {
+            element.innerHTML = component("fa-solid fa-circle");
+        }
     }
 
     return {
-        setOwner, getIsOwn, getOwner, getPos , reset
+        getPos, getOwner, getIsOwn, setIsOwn, setOwner, reset, renderOwnerSing
     }
 }
-const GameData = () => {
-    //game stats
-    let round = 1 ;
+function GD() {
+    let round = 1;
+    let turn = 1;
 
     let data = {
-        x : 0 ,
-        o : 0 ,
-        draw : 0 ,
-    }
-    //increase winner points
-    let setWinner = (player= 'draw') => {
-        data[player] += 1 ;
-    };
-    let setRound = () => {
-        round++
-    };
-        //reset data to 0
-    let reset = () => {
-        //reset round
-        round = 1 ;
-        //reset data values to default
-        let keys = Object.keys(data);
-        keys.forEach(key => {
-            data[key] = 0 ;
-        });
+        x: 0,
+        o: 0,
+        draw: 0,
     };
 
-    let getData = () => {
-        console.log(`Results : Round#${round}`);
-        console.log(`x : ${data.x} , o : ${data.o} , draws : ${data.draw}`);
-        return data ;
-    } 
+    function getTurn() {
+        return turn;
+    }
+    function getRound(){
+        return round ;
+    }
+    function setTurn() {
+        turn += 1 ;
+        if(turn == 3){
+            turn = 1 ;
+            round += 1 ;
+        }
+    }
+    function setRound() {
+        round++;
+    }
+    function reset() {
+        turn = 1 ;
+        round = 1;
+        data.x = 0;
+        data.o = 0;
+        data.draw = 0;
+    }
+    function setWinner(name = 'draw') {
+        //determinate winner
+        switch (name) {
+            case 'x':
+                data.x += 1;
+
+                break;
+            case 'o':
+                data.o += 1;
+
+                break;
+            case 'draw':
+                data.draw += 1;
+                break;
+        }
+        //render Update
+        renderUpdate(name);
+        //reset round 
+        round = 1;
+        //reset turn 
+        turn = 1;
+    }
+    function renderUpdate(Winner) {
+        let winner = document.querySelector(`#${Winner}`);
+        winner.innerText = `${Winner} : ${data[Winner]}`;
+    }
 
     return {
-        setWinner , reset , setRound , getData 
-    }
-
+        reset, setWinner, getTurn, setTurn, getRound ,
+    } 
 }
-const Board = (pubSub) => {
-    //board
-    let board = {
-        //0 , 1 , 2
-        A: [title('a0'), title('a1'), title('a2')],
-        B: [title('b0'), title('b1'), title('b2')],
-        C: [title('c0'), title('c1'), title('c2')]
-    }
-    //game data 
-    let gameData = GameData();
-    //pubSub events
-    let events = {
-        requestTitle : (playerSing)=> `request_title_${playerSing}`,
-        reqTitleResponse : (playerSing) => `request_title_resp_${playerSing}`,
-        reqTitlesOwned : (playerSing) => `submit_titles_owned_${playerSing}`,
-        reset : (playerSign) => {`reset_${playerSign}`},
-    }
-    //module to check winner patterns
-    let isWinner = IsWinner();
-    //set a title to a player 
-    let setTitle = (obj = { Group: '', Pos: 0, Owner: '' }) => {
-        //acceder board.group.pos.setOwner(sign)
-        let group = {};
-        group = board[obj.Group];
-        let title = group[obj.Pos];
 
-        let resp = title.setOwner(obj.Owner);
-        //if resp is false title is owned 
-        if (resp == false) {
-            console.log(`${title.getPos()} is owned by ${title.getOwner()}`);
-            //it is owned by someone error
-            pubSub.publish(events.reqTitleResponse(obj.Owner), {resp: false, pos: title.getPos()});
-        }
-        else if (resp == true) {
-            console.log(`${title.getPos()} was take by ${title.getOwner()}`);
-            //it was took successfully
-            pubSub.publish(events.reqTitleResponse(obj.Owner), {resp: true, pos: title.getPos()});
-        }
+function Board() {
+    let board = {
+        A: [Title('a0'), Title('a1'), Title('a2')],
+        B: [Title('b0'), Title('b1'), Title('b2')],
+        C: [Title('c0'), Title('c1'), Title('c2')],
+    };
+    let players = {
+        x : Player('x') ,
+        o : Player('o') ,
     }
-    //reset titles
-    let resetTitles = () => {
-        let keys = Object.keys(board);
-        keys.forEach(key=>{
-            key.forEach(title=>{
+    let gameData = GD();
+
+ 
+    function reset() {
+        //get board.A , .B , .C
+        let groups = Object.keys(board);
+        //call reset for each title inside them
+        groups.forEach(group => {
+            board[group].forEach(title => {
                 title.reset();
             })
         })
-    } 
-
-    //init pub sub events
-    let init = () => {
-        //check if player wants own a title & if it is winner after take it
-        pubSub.subscribe(events.requestTitle('x'), setTitle);
-        pubSub.subscribe(events.requestTitle('o'), setTitle);
-
-        //check winner x
-        pubSub.subscribe(events.reqTitlesOwned('x') , function(obj){
-            if(isWinner.check(obj) == true){
-                //console.log winner
-                console.log('x won round');
-                //set winner at game data , print result
-                gameData.setWinner('x');
-                gameData.getData()
-                //increase round
-                gameData.setRound();
-                //reset board
-                resetTitles();
-                //reset players
-                pubSub.emit(events.reset('x'));
-                pubSub.emit(events.reset('o'));
-                
-                
-
-            }
-        })
-        //check winner o
-        pubSub.subscribe(events.reqTitlesOwned('o') , function(obj){
-            if(isWinner.check(obj) == true){
-                console.log('o won round');
-                gameData.setWinner('o');
-                gameData.getData()
-                //increase round
-                gameData.setRound();
-                //reset board
-                resetTitles();
-                //reset players
-                pubSub.emit(events.reset('x'));
-                pubSub.emit(events.reset('o'));
-
-            }
-        })
     }
+    function setTitleOwner(group, pos, owner ) {
+        let title = board[group][pos];
+        //titles is not owned by someone else
+        if (title.getIsOwn() == false) {
+            //set title to owned
+            title.setIsOwn(true);
+            //set owner
+            title.setOwner(owner);
+            //render owner sing 
+            title.renderOwnerSing(owner);
+            //title was successfully owned
+            players[owner].setTitle(title.getPos());
 
+            return true;
+        } else {
+            //title could not be owned
+            return false;
+        }
+    }
     
-    init();
+    function play(){
+        let board = document.querySelector('#board');
+        board.addEventListener('click' , eve => {
+            let target = eve.target;
+            if(target.classList.contains('board__title')){
+                if(gameData.getTurn() == 1){
+                    //check if player can own title
+                    if(setTitleOwner(target.id[0].toUpperCase() , target.id[1] , 'x' )){
+                        //won 
+                        if(havePatterns(players.x.getTitles()) == true){
+                            gameData.setWinner('x');
+                            players.x.reset();
+                            players.o.reset();
+                            reset()
+                            
+                        } else {
+                            if(gameData.getRound() == 5 ){
+                                gameData.setWinner('draw');
+                                players.x.reset();
+                                players.o.reset();
+                                reset()
+                            }
+                            else{
+                                gameData.setTurn();
+                            }
+                        }
+                    }
+                } 
+                else if (gameData.getTurn() == 2){
+                    //check if player can own title
+                    if(setTitleOwner(target.id[0].toUpperCase() , target.id[1] , 'o' )){
+                        //won 
+                        if(havePatterns(players.o.getTitles()) == true){
+                            gameData.setWinner('o');
+                            players.x.reset();
+                            players.o.reset();
+                            reset();
+                        } else {
+                            gameData.setTurn(); 
+                        }
+                    }
+                }
+            } 
+        });
+    }
+    play()
 
     return {
-        isWinner : isWinner.check , setTitle
+        reset, setTitleOwner, players
     }
-
-};
-
-
-export {
-    Board ,
 }
+export default Board;

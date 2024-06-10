@@ -1,15 +1,12 @@
-
-function titles(){
-    //storage owned titles by group
+function Titles(){
     let board = {
         A: [],
         B: [],
         C: [],
-    }
-    let sortingGroup = (Group = '') => {
-        let group = [];
-        group = board[Group];
+    };
 
+    function sortingGroup(Group) {
+        let group = board[Group];
         let holder = '';
         for (let e = 0; e < group.length; e++) {
             for (let i = 0; i < group.length; i++) {
@@ -25,84 +22,50 @@ function titles(){
             }
         }
     }
-    let setTitle = (Pos = '') => {
-        //break response into pos[0] = group && pos[1] = #
-        let pos = Pos.split('');
+    //storage new titles owned by player & sort them
+    function setTitle(Pos) {
         //storage pos into board group
-        let group = pos[0].toUpperCase();
-        board[group].push((pos[0] + pos[1]));
+        let group = Pos[0].toUpperCase();
+        board[group].push((Pos[0] + Pos[1]));
         //sort board[group]
         if (board[group].length > 1) {
             sortingGroup(group);
         }
     }
-    let getTitles = () => board;
-    
-    let reset = () => {
+    //return board
+    function getTitles() {
+        return board;
+    }
+    //clean player board
+    function reset() {
         let keys = Object.keys(board);
-        keys.forEach(key =>{
+        keys.forEach(key => {
             board[key] = [];
-        })
+        });
     }
+
+
     return {
-        getTitles ,  setTitle, reset ,
+        setTitle , getTitles , reset
     }
 }
 
-function Player(Sign , pubSub){
-    //storage player sign
-    //storage data about player's owned titles
+function Player(Sign){
+    let board = Titles();
     let sign = Sign;
-    let playerTitles = titles();
 
-    //pubSub events
-    let events = {
-        requestTitle: `request_title_${sign}` ,
-        reqTitleResponse : `request_title_resp_${sign}` ,
-        reqTitlesOwned: `submit_titles_owned_${sign}`,
-        reset : `reset_${sign}` ,
+    function getSign() {
+        return sign ;
     }
-    
-    //trigger on Board response to requestTitle , if resp is true , add position to player titles
-    let setTitel = (obj = { resp, pos }) => {
-        let resp = obj.resp;
-        let pos = obj.pos;
-        if (resp == true) {
-            playerTitles.setTitle(pos);
-        }
-
-        //send back titles to check if player won
-        pubSub.publish(events.reqTitlesOwned , playerTitles.getTitles());
-    }
-
-    //request a title to board via PubSub
-    let requestTitle= (Group = 'A' , Pos = 0 ) => {
-        const obj = {
-            Group , 
-            Pos , 
-            Owner : sign ,
-        } 
-        
-        pubSub.publish(events.requestTitle, obj);
-    }
-
-    //init pubSub events
-    let init = () => {
-        //subscribe to resp from board when request title ask for a title
-        pubSub.subscribe(events.reqTitleResponse , setTitel);
-        pubSub.subscribe(events.reset , reset )
-    }
-    
-    init();
-
-    //testing purpose
     return {
-        setTitel , requestTitle , getTitles : playerTitles.getTitles ,
+        getSign ,
+        setTitle : board.setTitle ,
+        getTitles : board.getTitles ,
+        reset : board.reset ,
     }
-
-};
-
-
-export {
-    Player ,
 }
+
+/*
+    player only storage titles owned by player 
+*/
+export default Player
