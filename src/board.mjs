@@ -1,9 +1,9 @@
-import Player from "./player";
+import Player from "./player.mjs";
 
 function havePatterns(obj) {
-    let testHorizontalPattern = (obj) => {
+    let testVerticalsPatterns = (obj) => {
         //run test ower own horizontal pos
-        let horizontal = (obj, pos) => {
+        let vertical = (obj, pos) => {
             let hasValue = [];
             let hasPattern = 0;
             let getValue = ['a', 'b', 'c'].map(value => (value + pos));
@@ -14,7 +14,23 @@ function havePatterns(obj) {
                 if (getValue[counter] == obj[key][pos]) {
                     hasValue.push(true);
                 } else {
-                    hasValue.push(false);
+                    //search trought the group for the value
+                    let isVal = (val , arr) => {
+                        for (let i of arr) {
+                            if(val == i){
+                                return true;
+                            }
+                        }
+                        return false 
+                    }
+
+                    if (isVal(getValue[counter] , obj[key]) == true) {
+                        hasValue.push(true);
+                    } else {
+                        //it do not have it either in other arr[pos]
+                        hasValue.push(false);
+                    }
+
                 }
                 counter += 1;
             });
@@ -32,16 +48,16 @@ function havePatterns(obj) {
             }
         }
 
-        if (horizontal(obj, 0) == true || horizontal(obj, 1) == true || horizontal(obj, 2) == true) {
+        if (vertical(obj, 0) == true || vertical(obj, 1) == true || vertical(obj, 2) == true) {
             return true;
         } else {
             return false;
         }
     }
     //run test over one vertical group
-    let testVerticalsPatterns = (obj) => {
+    let testHorizontalPattern = (obj) => {
         //test one vertical group
-        let vertical = (obj, group) => {
+        let horizontal = (obj, group) => {
             let hasValue = [];
             let hasPattern = false;
             let getValue = [0, 1, 2].map(value => (group.toLowerCase()) + value);
@@ -67,7 +83,7 @@ function havePatterns(obj) {
             return hasPattern;
         }
 
-        if (vertical(obj, 'A') == true || vertical(obj, 'B') == true || vertical(obj, 'C') == true) {
+        if (horizontal(obj, 'A') == true || horizontal(obj, 'B') == true || horizontal(obj, 'C') == true) {
             return true;
         } else {
             return false;
@@ -115,16 +131,18 @@ function havePatterns(obj) {
     }
 
     let check = (obj) => {
-        switch(true){
-            case obj == undefined :
+        switch (true) {
+            case obj == undefined:
                 console.log(`pattern can't be performed over an undefined object`);
-                return false ;
-                break ;
-            default :
+                return false;
+                break;
+            default:
                 if (testHorizontalPattern(obj) == true || testVerticalsPatterns(obj) == true || testCrossPatterns(obj) == true) {
                     return true;
-                }   
-                break ;
+                } else {
+                    return false;
+                }
+                break;
         }
     }
 
@@ -156,7 +174,7 @@ function Title(Pos) {
     function reset() {
         owner = '';
         isOwn = false;
-        element.innerHTML = '' ;
+        element.innerHTML = '';
     }
     function renderOwnerSing(owner) {
         let component = (className) => {
@@ -164,9 +182,9 @@ function Title(Pos) {
         };
 
         if (owner == 'x') {
-            element.innerHTML = component('fa-solid fa-x');
+            element.innerHTML = component('fa-solid fa-x x-theme');
         } else if (owner == 'o') {
-            element.innerHTML = component("fa-solid fa-circle");
+            element.innerHTML = component("fa-solid fa-circle o-theme");
         }
     }
 
@@ -187,21 +205,21 @@ function GD() {
     function getTurn() {
         return turn;
     }
-    function getRound(){
-        return round ;
+    function getRound() {
+        return round;
     }
     function setTurn() {
-        turn += 1 ;
-        if(turn == 3){
-            turn = 1 ;
-            round += 1 ;
+        turn += 1;
+        if (turn == 3) {
+            turn = 1;
+            round += 1;
         }
     }
     function setRound() {
         round++;
     }
     function reset() {
-        turn = 1 ;
+        turn = 1;
         round = 1;
         data.x = 0;
         data.o = 0;
@@ -235,8 +253,8 @@ function GD() {
     }
 
     return {
-        reset, setWinner, getTurn, setTurn, getRound ,
-    } 
+        reset, setWinner, getTurn, setTurn, getRound,
+    }
 }
 
 function Board() {
@@ -246,12 +264,12 @@ function Board() {
         C: [Title('c0'), Title('c1'), Title('c2')],
     };
     let players = {
-        x : Player('x') ,
-        o : Player('o') ,
-    }
+        x: Player('x'),
+        o: Player('o'),
+    };
     let gameData = GD();
 
- 
+
     function reset() {
         //get board.A , .B , .C
         let groups = Object.keys(board);
@@ -262,7 +280,7 @@ function Board() {
             })
         })
     }
-    function setTitleOwner(group, pos, owner ) {
+    function setTitleOwner(group, pos, owner) {
         let title = board[group][pos];
         //titles is not owned by someone else
         if (title.getIsOwn() == false) {
@@ -281,56 +299,57 @@ function Board() {
             return false;
         }
     }
-    
-    function play(){
+
+    function play() {
         let board = document.querySelector('#board');
-        board.addEventListener('click' , eve => {
+        board.addEventListener('click', eve => {
             let target = eve.target;
-            if(target.classList.contains('board__title')){
-                if(gameData.getTurn() == 1){
+            if (target.classList.contains('board__title')) {
+                if (gameData.getTurn() == 1) {
                     //check if player can own title
-                    if(setTitleOwner(target.id[0].toUpperCase() , target.id[1] , 'x' )){
+                    if (setTitleOwner(target.id[0].toUpperCase(), target.id[1], 'x')) {
                         //won 
-                        if(havePatterns(players.x.getTitles()) == true){
+                        if (havePatterns(players.x.getTitles()) == true) {
                             gameData.setWinner('x');
                             players.x.reset();
                             players.o.reset();
                             reset()
-                            
+
                         } else {
-                            if(gameData.getRound() == 5 ){
+                            if (gameData.getRound() == 5) {
                                 gameData.setWinner('draw');
                                 players.x.reset();
                                 players.o.reset();
                                 reset()
                             }
-                            else{
+                            else {
                                 gameData.setTurn();
                             }
                         }
                     }
-                } 
-                else if (gameData.getTurn() == 2){
+                }
+                else if (gameData.getTurn() == 2) {
                     //check if player can own title
-                    if(setTitleOwner(target.id[0].toUpperCase() , target.id[1] , 'o' )){
+                    if (setTitleOwner(target.id[0].toUpperCase(), target.id[1], 'o')) {
                         //won 
-                        if(havePatterns(players.o.getTitles()) == true){
+                        if (havePatterns(players.o.getTitles()) == true) {
                             gameData.setWinner('o');
                             players.x.reset();
                             players.o.reset();
                             reset();
                         } else {
-                            gameData.setTurn(); 
+                            gameData.setTurn();
                         }
                     }
                 }
-            } 
+            }
         });
     }
     play()
 
     return {
-        reset, setTitleOwner, players
+        reset, setTitleOwner, players,
     }
 }
 export default Board;
+export { havePatterns }
