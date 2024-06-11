@@ -249,7 +249,21 @@ function GD() {
     }
     function renderUpdate(Winner) {
         let winner = document.querySelector(`#${Winner}`);
-        winner.innerText = `${Winner} : ${data[Winner]}`;
+        let text = '';
+        switch(Winner){
+            case 'x' :
+                text = 'Player One : ';
+                winner.innerText = text+= data[Winner];
+                break;
+            case 'o' :
+                text = 'Player Two : ';
+                winner.innerText = text+= data[Winner];
+                break;
+            case 'draw' :
+                text = 'Draw :'
+                winner.innerText = text+= data[Winner];
+                break;
+        }
     }
 
     return {

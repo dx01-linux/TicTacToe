@@ -15,11 +15,11 @@
 }
 
 /* block components */
-
 .board {
+    
     display: grid;
-    height: 50vh;
-    width: 50vw;
+    height:calc(10rem * 3);
+    width: calc(200px * 3 );
 }
 .info {
     align-items: center;
@@ -33,7 +33,7 @@
     width: 200px;
 }
 /* dependents*/
-.wrapper__section {
+section {
     align-items: center;
     display: flex;
     justify-content: center ;
@@ -64,7 +64,6 @@
     display: grid;
     grid-template-columns: repeat(3 , 1fr);
     grid-template-rows: calc(3 , 1fr);
-    padding: 3px;
     
 }
 
@@ -84,7 +83,7 @@
 }
 
 i {
-    font-size: 4rem;
+    font-size: 2rem;
 }
 
 i.x-theme {
